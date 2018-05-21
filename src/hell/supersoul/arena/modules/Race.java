@@ -60,7 +60,6 @@ import hell.supersoul.arena.utils.Region;
 import hell.supersoul.arena.waitroom.WRManager;
 import hell.supersoul.sound.enums.StopSoundMode;
 import hell.supersoul.sound.manager.SoundManager;
-import net.minecraft.server.v1_11_R1.SoundCategory;
 
 public abstract class Race extends PArena implements Listener {
 	public Race(String id) {

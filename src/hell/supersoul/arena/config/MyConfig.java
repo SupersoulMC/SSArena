@@ -21,12 +21,12 @@ public class MyConfig
     private FileConfiguration config;
  
     @SuppressWarnings("deprecation")
-    public MyConfig(InputStream configStream, File configFile, int comments, JavaPlugin plugin) 
+    public MyConfig(File configFile, int comments, JavaPlugin plugin) 
     {
         this.comments = comments;
         this.manager = new MyConfigManager(plugin);
         this.file = configFile;
-        this.config = YamlConfiguration.loadConfiguration(configStream);
+        this.config = YamlConfiguration.loadConfiguration(configFile);
     }
  
     public Object get(String path) {return this.config.get(path);}
@@ -94,7 +94,7 @@ public class MyConfig
     }
  
     @SuppressWarnings("deprecation")
-    public void reloadConfig() {this.config = YamlConfiguration.loadConfiguration(manager.getConfigContent(file));}
+    public void reloadConfig() {this.config = YamlConfiguration.loadConfiguration(file);}
  
     public void saveConfig() 
     {

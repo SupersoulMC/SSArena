@@ -22,7 +22,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -40,7 +40,7 @@ import hell.supersoul.arena.modules.Arena;
 import hell.supersoul.arena.modules.Race;
 import hell.supersoul.arena.modules.Survive;
 import hell.supersoul.arena.modules.Team;
-import net.minecraft.server.v1_11_R1.EntityPlayer;
+import net.minecraft.server.v1_12_R1.EntityPlayer;
 
 public class AUtils {
 	public static ArrayList<Material> blockList = new ArrayList<Material>();

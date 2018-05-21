@@ -34,7 +34,7 @@ public class MyConfigManager
 				this.setHeader(file, header);
 		}
 		
-		MyConfig config = new MyConfig(this.getConfigContent(fileName), file, this.getCommentsNum(file), plugin);
+		MyConfig config = new MyConfig(file, this.getCommentsNum(file), plugin);
 		return config;
 	}
 

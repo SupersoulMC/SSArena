@@ -15,8 +15,8 @@ import org.bukkit.Particle;
 import org.bukkit.SkullType;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -63,8 +63,8 @@ import hell.supersoul.arena.modules.Survive;
 import hell.supersoul.arena.modules.Team;
 import hell.supersoul.arena.utils.AUtils;
 import hell.supersoul.arena.utils.Region;
-import net.minecraft.server.v1_11_R1.EnumParticle;
-import net.minecraft.server.v1_11_R1.PacketPlayOutWorldParticles;
+import net.minecraft.server.v1_12_R1.EnumParticle;
+import net.minecraft.server.v1_12_R1.PacketPlayOutWorldParticles;
 
 public class ZombieApocalypse extends Race implements Listener, Team, Survive {
 
