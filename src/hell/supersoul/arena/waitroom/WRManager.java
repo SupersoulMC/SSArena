@@ -33,6 +33,7 @@ import hell.supersoul.arena.arenas.ArenaManager;
 import hell.supersoul.arena.config.MyConfig;
 import hell.supersoul.arena.enums.WStatus;
 import hell.supersoul.arena.modules.Arena;
+import hell.supersoul.arena.modules.PArena;
 import hell.supersoul.arena.modules.Race;
 import hell.supersoul.arena.recovery.RecoverManager;
 import hell.supersoul.arena.utils.AUtils;
@@ -49,7 +50,8 @@ public class WRManager {
 	public void loadMapData() {
 		MyConfig config = Main.getConfigManager().getNewConfig("data/mapData.yml");
 		for (String string : config.getConfigurationSection("").getKeys(false)) {
-			MapData md = new MapData(config.getString(string + ".className"), config.getInt(string + ".difficulty"), (ArrayList<String>) config.getList(string + ".desc"));
+			MapData md = new MapData(config.getString(string + ".className"), config.getInt(string + ".difficulty"),
+					(ArrayList<String>) config.getList(string + ".desc"));
 			md.setAllowArmorAbilitySwitch(config.getBoolean(string + ".allowArmorAbilitySwitch"));
 			md.setAllowChooseTeam(config.getBoolean(string + ".allowChooseTeam"));
 			md.setAllowChooseTeamSwitch(config.getBoolean(string + ".allowChooseTeamSwitch"));
@@ -143,7 +145,8 @@ public class WRManager {
 						String title = "¡±b" + wr.getRoomName();
 						String subTitle = "¡±7Click the ready sign when you're ready!";
 						TitleAPI.sendTitle(player, 0, 60, 20, title, subTitle);
-						wr.sendMessage(Main.prefix + ChatColor.AQUA + player.getName() + ChatColor.GREEN + " joined " + ChatColor.GRAY + "the game!");
+						wr.sendMessage(Main.prefix + ChatColor.AQUA + player.getName() + ChatColor.GREEN + " joined "
+								+ ChatColor.GRAY + "the game!");
 						WRManager.getManager().updateWRScoreboard(wr);
 						SoundManager.get().stopSound(player, "bgm_ssnpc_village", StopSoundMode.stopAll);
 						SoundManager.get().playSound(player, "bgm_ssarena_waitroom", true);
@@ -170,7 +173,8 @@ public class WRManager {
 		WaitRoom wr = WRManager.getManager().getPlayerWaitRoom(player);
 		wr.getReadyPlayers().remove(player);
 		wr.getPlayers().remove(player);
-		wr.sendMessage(Main.prefix + ChatColor.AQUA + playerName + ChatColor.RED + " left " + ChatColor.GRAY + "the game!");
+		wr.sendMessage(
+				Main.prefix + ChatColor.AQUA + playerName + ChatColor.RED + " left " + ChatColor.GRAY + "the game!");
 		player.sendMessage(Main.prefix + ChatColor.RED + "You left the game!");
 		WRManager.getManager().updateWRScoreboard(wr);
 		RecoverManager.get().recoverInvandLoc(player);
@@ -204,7 +208,8 @@ public class WRManager {
 				wr.getTeamReadyPlayers().get(team).add(player);
 			}
 			player.teleport(wr.getReadyLocation());
-			wr.sendMessage(Main.prefix + teamColor(player) + player.getName() + ChatColor.GRAY + " is now " + ChatColor.GREEN + "ready!");
+			wr.sendMessage(Main.prefix + teamColor(player) + player.getName() + ChatColor.GRAY + " is now "
+					+ ChatColor.GREEN + "ready!");
 			player.getInventory().setItem(4, null);
 			WRManager.getManager().updateWRScoreboard(wr);
 
@@ -216,18 +221,19 @@ public class WRManager {
 		WaitRoom wr = WRManager.getManager().getPlayerWaitRoom(player);
 		if (wr != null) {
 			if (!wr.getStatus().equals(WStatus.INGAME) && !wr.getStatus().equals(WStatus.COUNTING)) {
-				/*if (wr.isTeam()) {
-					if (ArenaManager.getManager().getPlayerTeam(player).equals("red")) {
-						wr.getRedReadyPlayers().remove(player);
-					} else if (ArenaManager.getManager().getPlayerTeam(player).equals("blue")) {
-						wr.getBlueReadyPlayers().remove(player);
-					}
-				}*/
+				/*
+				 * if (wr.isTeam()) { if
+				 * (ArenaManager.getManager().getPlayerTeam(player).equals("red")) {
+				 * wr.getRedReadyPlayers().remove(player); } else if
+				 * (ArenaManager.getManager().getPlayerTeam(player).equals("blue")) {
+				 * wr.getBlueReadyPlayers().remove(player); } }
+				 */
 				wr.getReadyPlayers().remove(player);
 				player.teleport(wr.getUnreadyLocation());
 				WRManager.getManager().updateWRScoreboard(wr);
 				WRManager.getManager().setWRInv(player);
-				wr.sendMessage(Main.prefix + ChatColor.AQUA + playerName + ChatColor.GRAY + " is " + ChatColor.RED + "not ready " + ChatColor.GRAY + "yet!");
+				wr.sendMessage(Main.prefix + ChatColor.AQUA + playerName + ChatColor.GRAY + " is " + ChatColor.RED
+						+ "not ready " + ChatColor.GRAY + "yet!");
 			} else {
 				player.sendMessage(Main.prefix + ChatColor.RED + "Game already starting!");
 			}
@@ -248,11 +254,12 @@ public class WRManager {
 			}
 		}
 		Player player = Bukkit.getPlayer(playerName);
-		//TODO add to random team
+		// TODO add to random team
 		wr.getReadyPlayers().add(player);
 		player.teleport(wr.getRoomOwnerLocation());
 		wr.setRoomOwnerName(playerName);
-		wr.sendMessage(Main.prefix + ChatColor.AQUA + playerName + ChatColor.GRAY + " is now the " + ChatColor.AQUA + "room owner" + ChatColor.GRAY + "!");
+		wr.sendMessage(Main.prefix + ChatColor.AQUA + playerName + ChatColor.GRAY + " is now the " + ChatColor.AQUA
+				+ "room owner" + ChatColor.GRAY + "!");
 	}
 
 	public void preCountDown(WaitRoom wr) {
@@ -277,7 +284,8 @@ public class WRManager {
 			}
 		}
 		wr.setStatus(WStatus.WAITING);
-		Bukkit.getPlayer(wr.getRoomOwnerName()).sendMessage(Main.prefix + ChatColor.RED + "We don't have enough players to start!");
+		Bukkit.getPlayer(wr.getRoomOwnerName())
+				.sendMessage(Main.prefix + ChatColor.RED + "We don't have enough players to start!");
 	}
 
 	public void countDown(WaitRoom wr) {
@@ -290,7 +298,8 @@ public class WRManager {
 			int i = 5;
 
 			public void run() {
-				wr.sendMessage(Main.prefix + ChatColor.GRAY + "Game starting in " + ChatColor.AQUA + i + ChatColor.GRAY + " second(s)!");
+				wr.sendMessage(Main.prefix + ChatColor.GRAY + "Game starting in " + ChatColor.AQUA + i + ChatColor.GRAY
+						+ " second(s)!");
 				i--;
 				if (i <= 0) {
 					boolean start = true;
@@ -300,11 +309,12 @@ public class WRManager {
 						int size = wr.getAvailableTeams().size();
 						for (ChatColor team : wr.getAvailableTeams()) {
 							if (wr.getTeamReadyPlayers().get(team) == null) {
-								//TODO should be continue;
+								// TODO should be continue;
 								size--;
 								continue;
 							}
-							if (wr.getTeamReadyPlayers().get(team).size() >= wr.getMinPlayers() / wr.getAvailableTeams().size())
+							if (wr.getTeamReadyPlayers().get(team).size() >= wr.getMinPlayers()
+									/ wr.getAvailableTeams().size())
 								size--;
 						}
 						if (size > 0)
@@ -336,9 +346,10 @@ public class WRManager {
 		int i = 1;
 		String t;
 		String name = wr.getSelectedMap().getWorldName();
-		/*if (name.equals("Random")) {
-			name = wr.getMapList().get(new Random().nextInt(wr.getMapList().size()));
-		}*/
+		/*
+		 * if (name.equals("Random")) { name = wr.getMapList().get(new
+		 * Random().nextInt(wr.getMapList().size())); }
+		 */
 		for (;; i++) {
 			t = Integer.toString(i);
 			if (i < 10)
@@ -364,22 +375,25 @@ public class WRManager {
 			e.printStackTrace();
 			return;
 		}
-		AUtils.copyAndImportWorld(name, worldName);
 		Arena arena = null;
 		try {
 			arena = (Arena) constructor.newInstance(worldName);
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
 			wr.sendMessage(Main.prefix + ChatColor.RED + "Error: ClassCreateFailed, please report to HellSS.");
 			e.printStackTrace();
 			return;
 		}
+		if (arena instanceof PArena)
+			AUtils.copyAndImportWorld(name, worldName);
 		arena.iniArena(wr.getSelectedMap().getTitleName(), Bukkit.getWorld(worldName));
 		for (Player player : wr.getPlayers()) {
 			if (wr.getReadyPlayers().contains(player))
 				continue;
 			String playerName = player.getName();
 			player.sendMessage(Main.prefix + ChatColor.RED + "Game started but you're not ready!");
-			wr.sendMessage(Main.prefix + ChatColor.AQUA + playerName + ChatColor.GRAY + " has been kicked because he is " + ChatColor.RED + "not ready" + ChatColor.GRAY + " yet!");
+			wr.sendMessage(Main.prefix + ChatColor.AQUA + playerName + ChatColor.GRAY
+					+ " has been kicked because he is " + ChatColor.RED + "not ready" + ChatColor.GRAY + " yet!");
 		}
 		if (wr.isTeam()) {
 			for (ChatColor team : wr.getAvailableTeams())
@@ -468,14 +482,18 @@ public class WRManager {
 					wrBoard.resetScores(score);
 				}
 				wrObjective.getScore(ChatColor.RESET.toString()).setScore(8);
-				wrObjective.getScore(ChatColor.GRAY + "Map: " + ChatColor.AQUA + wr.getSelectedMap().getDisplayName()).setScore(7);
+				wrObjective.getScore(ChatColor.GRAY + "Map: " + ChatColor.AQUA + wr.getSelectedMap().getDisplayName())
+						.setScore(7);
 				if (wr.getRoomOwnerName() == null)
 					wrObjective.getScore(ChatColor.GRAY + "Room Owner: " + ChatColor.RED + "N/A").setScore(6);
 				else
-					wrObjective.getScore(ChatColor.GRAY + "Room Owner: " + ChatColor.AQUA + wr.getRoomOwnerName()).setScore(6);
+					wrObjective.getScore(ChatColor.GRAY + "Room Owner: " + ChatColor.AQUA + wr.getRoomOwnerName())
+							.setScore(6);
 				wrObjective.getScore(ChatColor.UNDERLINE.toString()).setScore(5);
-				wrObjective.getScore(ChatColor.GRAY + "Min Players: " + ChatColor.DARK_GREEN + wr.getMinPlayers()).setScore(4);
-				wrObjective.getScore(ChatColor.GRAY + "Non-ready Players: " + ChatColor.RED + (wr.getPlayers().size() - wr.getReadyPlayers().size())).setScore(3);
+				wrObjective.getScore(ChatColor.GRAY + "Min Players: " + ChatColor.DARK_GREEN + wr.getMinPlayers())
+						.setScore(4);
+				wrObjective.getScore(ChatColor.GRAY + "Non-ready Players: " + ChatColor.RED
+						+ (wr.getPlayers().size() - wr.getReadyPlayers().size())).setScore(3);
 				if (wr.isTeam()) {
 					String str = "";
 					for (ChatColor c : wr.getAvailableTeams()) {
@@ -484,8 +502,12 @@ public class WRManager {
 					str = str.substring(0, str.length() - 3);
 					wrObjective.getScore(ChatColor.GRAY + "Ready Players: " + str).setScore(2);
 				} else
-					wrObjective.getScore(ChatColor.GRAY + "Ready Players: " + ChatColor.GREEN + wr.getReadyPlayers().size()).setScore(2);
-				wrObjective.getScore(ChatColor.GRAY + "Max Players: " + ChatColor.DARK_RED + wr.getMaxPlayers()).setScore(1);
+					wrObjective
+							.getScore(
+									ChatColor.GRAY + "Ready Players: " + ChatColor.GREEN + wr.getReadyPlayers().size())
+							.setScore(2);
+				wrObjective.getScore(ChatColor.GRAY + "Max Players: " + ChatColor.DARK_RED + wr.getMaxPlayers())
+						.setScore(1);
 			}
 		}.runTaskLater(Main.getInstance(), 5);
 	}
@@ -530,7 +552,8 @@ public class WRManager {
 		int x, y, z, yaw;
 		Location loc;
 		boolean team = false;
-		MyConfig waitRoomData = Main.getConfigManager().getNewConfig("data/waitRoomData.yml", new String[] { "SS Arena waitRoomData file" });
+		MyConfig waitRoomData = Main.getConfigManager().getNewConfig("data/waitRoomData.yml",
+				new String[] { "SS Arena waitRoomData file" });
 		WaitRoom wr = new WaitRoom(mode, roomName);
 		if (waitRoomData.getBoolean(mode + ".team")) {
 			team = true;

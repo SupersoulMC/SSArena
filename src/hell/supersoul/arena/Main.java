@@ -57,6 +57,13 @@ public class Main extends JavaPlugin {
 		Player player = (Player) sender;
 		if (cmd.getName().equals("test")) {
 			
+			WaitRoom wr = WRManager.getManager().createWaitRoom("IceWR");
+			WRManager.getManager().changeMap(wr, "IceRealm");
+			WRManager.getManager().addPlayer(wr.getRoomName(), player.getName());
+			WRManager.getManager().playerReady(null, player.getName());
+			WRManager.getManager().countDown(wr);
+			
+			/*
 			WaitRoom wr = WRManager.getManager().createWaitRoom("EventTeamWR");
 			WRManager.getManager().changeMap(wr, "TheMathKingE");
 			int temp = Bukkit.getOnlinePlayers().size() / 2;
@@ -70,6 +77,7 @@ public class Main extends JavaPlugin {
 				count++;
 			}
 			WRManager.getManager().countDown(wr);
+			*/
 			
 			/*
 			WaitRoom wr = WRManager.getManager().createWaitRoom("EventTeamWR");

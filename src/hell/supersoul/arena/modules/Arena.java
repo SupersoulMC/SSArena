@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 
 import com.connorlinfoot.titleapi.TitleAPI;
@@ -26,14 +27,15 @@ import hell.supersoul.arena.utils.Region;
 import hell.supersoul.arena.waitroom.WRManager;
 import hell.supersoul.arena.waitroom.WaitRoom;
 
-public abstract class Arena implements Listener{
+public abstract class Arena implements Listener {
 
 	public static ArrayList<Arena> arenas = new ArrayList<>();
 
 	ArrayList<String> deadPlayers = new ArrayList<>();
 	String id, displayName;
 	WaitRoom waitRoom;
-	ArrayList<String> players = new ArrayList<>(), disconnectedPlayers = new ArrayList<>(), spectators = new ArrayList<>(), leftPlayers = new ArrayList<>();
+	ArrayList<String> players = new ArrayList<>(), disconnectedPlayers = new ArrayList<>(),
+			spectators = new ArrayList<>(), leftPlayers = new ArrayList<>();
 	ArrayList<ASetting> settings = new ArrayList<>();
 	AStatus status = AStatus.inGame;
 	Boolean hidden = false;
@@ -61,32 +63,30 @@ public abstract class Arena implements Listener{
 	public abstract void playerRespawn(Player player, DamageType dt, Object... args);
 
 	public abstract void playerDeath(Player player, DamageType dt, Object... args);
-	
+
 	public abstract void playerReconnected(Player player);
-	
+
 	public abstract void playerDisconnected(Player player);
 
 	public void endGame() {
 		HandlerList.unregisterAll(this);
 	}
-	
+
 	public abstract Scoreboard updateScoreboard();
 
 	// TODO Damage, settings, regions
 	public void iniArena(String mapName, World world) {
 		this.setDisplayName("TEST");
-		//this.setDisplayName(WaitRoomManager.getManager().getMapData(mapName).getDisplayName());
+		// this.setDisplayName(WaitRoomManager.getManager().getMapData(mapName).getDisplayName());
 		MyConfig config = Main.getConfigManager().getNewConfig("data/arenas/" + mapName + ".yml");
 		this.setAuthors((ArrayList<String>) config.getList("Arena.authors"));
 		this.world = world;
 		/*
-		Boolean team = config.getBoolean("Arena.team");
-		Boolean survive = config.getBoolean("Arena.survive");
-		if (team)
-			this.setTeam(new Team(mapName, world, this));
-		if (survive)
-			this.setSurvive(new Survive(mapName, world, this));
-		*/
+		 * Boolean team = config.getBoolean("Arena.team"); Boolean survive =
+		 * config.getBoolean("Arena.survive"); if (team) this.setTeam(new Team(mapName,
+		 * world, this)); if (survive) this.setSurvive(new Survive(mapName, world,
+		 * this));
+		 */
 	}
 
 	public void sendMessage(String msg) {
@@ -97,7 +97,16 @@ public abstract class Arena implements Listener{
 			Bukkit.getPlayer(playerName).sendMessage(msg);
 		}
 	}
-	
+
+	public void sendDelayedMessage(String msg, long delay) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				sendMessage(msg);
+			}
+		}.runTaskLater(Main.getInstance(), delay);
+	}
+
 	public void sendTitle(int fadein, int stay, int fadeout, String title, String subTitle) {
 		for (String playerName : players) {
 			Player player = Bukkit.getPlayer(playerName);
@@ -197,11 +206,11 @@ public abstract class Arena implements Listener{
 	public HashMap<String, ArrayList<PStatus>> getPlayerStatus() {
 		return playerStatus;
 	}
-	
+
 	public ArrayList<String> getDeadPlayers() {
 		return deadPlayers;
 	}
-	
+
 	public void setDeadPlayers(ArrayList<String> deadPlayers) {
 		this.deadPlayers = deadPlayers;
 	}
@@ -213,11 +222,11 @@ public abstract class Arena implements Listener{
 	public ArrayList<String> getLeftPlayers() {
 		return leftPlayers;
 	}
-	
+
 	public HashMap<ChatColor, ArrayList<String>> getTeamPlayers() {
 		return teamPlayers;
 	}
-	
+
 	public String getTeamPrefix(String playerName) {
 		ChatColor team = ChatColor.GRAY;
 		for (ChatColor c : this.getTeamPlayers().keySet()) {
@@ -232,7 +241,7 @@ public abstract class Arena implements Listener{
 			return ChatColor.BLUE + "B";
 		return ChatColor.GRAY + "-";
 	}
-	
+
 	public String getTeamFullname(String playerName) {
 		ChatColor team = ChatColor.GRAY;
 		for (ChatColor c : this.getTeamPlayers().keySet()) {
