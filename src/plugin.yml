@@ -1,0 +1,14 @@
+name: SSArena
+main: hell.supersoul.arena.Main
+author: HellSS
+description: Supersoul Private Plugin
+version: 1.0
+depend: [Vault,Multiverse-Core]
+
+commands:
+    join:
+        description: SS Arena
+    leave:
+        description: SS Arena
+    test:
+        description: SS Arena
