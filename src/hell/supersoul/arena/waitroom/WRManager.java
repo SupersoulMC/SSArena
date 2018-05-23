@@ -3,6 +3,8 @@ package hell.supersoul.arena.waitroom;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -138,9 +140,14 @@ public class WRManager {
 			if (!wr.isFull()) {
 				if (!wr.getStatus().equals(WStatus.INGAME)) {
 					if (!wr.getPlayers().contains(player)) {
-						RecoverManager.get().saveInvandLoc(player);
+						if (wr.isUsingInvRecovery()) {
+							RecoverManager.get().saveInvandLoc(player);
+							WRManager.getManager().setWRInv(player);
+							AUtils.unfreezePlayer(player, true);
+						} else {
+							RecoverManager.get().saveLoc(player);
+						}
 						player.teleport(wr.getUnreadyLocation());
-						WRManager.getManager().setWRInv(player);
 						wr.getPlayers().add(player);
 						String title = "¡±b" + wr.getRoomName();
 						String subTitle = "¡±7Click the ready sign when you're ready!";
@@ -150,9 +157,8 @@ public class WRManager {
 						WRManager.getManager().updateWRScoreboard(wr);
 						SoundManager.get().stopSound(player, "bgm_ssnpc_village", StopSoundMode.stopAll);
 						SoundManager.get().playSound(player, "bgm_ssarena_waitroom", true);
-						AUtils.unfreezePlayer(player, true);
 						player.setScoreboard(wr.getScoreBoard());
-						if (wr.isAutoReady() && !wr.getReadyPlayers().contains(playerName))
+						if (wr.isAutoReady() && !wr.getReadyPlayers().contains(player))
 							WRManager.getManager().playerReady(null, playerName);
 					} else
 						player.sendMessage(Main.prefix + ChatColor.RED + " You are already in the wait room!");
@@ -177,13 +183,16 @@ public class WRManager {
 				Main.prefix + ChatColor.AQUA + playerName + ChatColor.RED + " left " + ChatColor.GRAY + "the game!");
 		player.sendMessage(Main.prefix + ChatColor.RED + "You left the game!");
 		WRManager.getManager().updateWRScoreboard(wr);
-		RecoverManager.get().recoverInvandLoc(player);
-		player.setHealth(20);
-		player.setFoodLevel(20);
-		for (PotionEffect pe : player.getActivePotionEffects()) {
-			player.removePotionEffect(pe.getType());
+		if (wr.usingInvRecovery) {
+			RecoverManager.get().recoverInvandLoc(player);
+			player.setHealth(20);
+			player.setFoodLevel(20);
+			for (PotionEffect pe : player.getActivePotionEffects()) {
+				player.removePotionEffect(pe.getType());
+			}
+		} else {
+			RecoverManager.get().recoverLoc(player);
 		}
-		player.setWalkSpeed(0.2f);
 		if (wr.getPlayers().size() <= 0) {
 			WRManager.getManager().deleteWaitRoom(wr);
 			return;
@@ -526,8 +535,12 @@ public class WRManager {
 	public void gameEnded(Arena arena, Player winner) {
 		WaitRoom wr = arena.getWaitRoom();
 		if (wr.isAutoDisband()) {
-			for (String playerName : arena.getPlayers())
+			Iterator<String> itr = arena.getPlayers().iterator();
+			while (itr.hasNext()) {
+				String playerName = itr.next();
+				itr.remove();
 				WRManager.getManager().removePlayer(playerName);
+			}
 			WRManager.getManager().deleteWaitRoom(wr);
 		} else {
 			wr.getPlayers().clear();
@@ -544,8 +557,9 @@ public class WRManager {
 			}
 			WRManager.getManager().setRoomOwner(wr.getRoomOwnerName(), winner.getName());
 		}
+		if (arena instanceof PArena)
+			AUtils.deleteWorld(arena.getId());
 		Arena.arenas.remove(arena);
-		AUtils.deleteWorld(arena.getId());
 	}
 
 	public static WaitRoom loadWaitRoom(String mode, String roomName) {
@@ -567,6 +581,7 @@ public class WRManager {
 			wr.setAllowUnready(true);
 		if (waitRoomData.getBoolean(mode + ".autoDisband"))
 			wr.setAutoDisband(true);
+		wr.setUsingInvRecovery(waitRoomData.getBoolean(mode + ".usingInvRecovery"));
 		x = waitRoomData.getInt(mode + ".unreadyLocation.x");
 		y = waitRoomData.getInt(mode + ".unreadyLocation.y");
 		z = waitRoomData.getInt(mode + ".unreadyLocation.z");

@@ -44,6 +44,18 @@ public class RecoverManager {
 		}
 		arena.playerReconnected(player);
 	}
+	
+	public void recoverLoc(Player player) {
+		if (player == null)
+			return;
+		if (!player.isOnline())
+			return;
+		if (!Main.getInstance().getConfig().contains("locinv." + player.getName()))
+			return;
+		player.teleport((Location) Main.getInstance().getConfig().get("locinv." + player.getName() + ".loc"));
+		Main.getInstance().getConfig().set("locinv." + player.getName(), null);
+		Main.getInstance().saveConfig();
+	}
 
 	public void recoverInvandLoc(Player player) {
 		if (player == null)
@@ -55,18 +67,17 @@ public class RecoverManager {
 		Bukkit.getLogger().info("recovering " + player.getName());
 		Main.getInstance().reloadConfig();
 		player.setGameMode(GameMode.SURVIVAL);
-		player.setHealth(20);
-		player.setFoodLevel(20);
-		player.setWalkSpeed(0.2f);
-		ItemStack[] items = ((ArrayList<ItemStack>) Main.getInstance().getConfig().get("locinv." + player.getName() + ".items")).toArray(new ItemStack[0]);
+		ItemStack[] items = ((ArrayList<ItemStack>) Main.getInstance().getConfig()
+				.get("locinv." + player.getName() + ".items")).toArray(new ItemStack[0]);
 		player.getInventory().setContents(items);
-		player.getInventory().setArmorContents(((ArrayList<ItemStack>) Main.getInstance().getConfig().get("locinv." + player.getName() + ".armor")).toArray(new ItemStack[0]));
-		player.teleport((Location) Main.getInstance().getConfig().get("locinv." + player.getName() + ".loc"));
+		player.getInventory().setArmorContents(
+				((ArrayList<ItemStack>) Main.getInstance().getConfig().get("locinv." + player.getName() + ".armor"))
+						.toArray(new ItemStack[0]));
 		player.setExp((float) Main.getInstance().getConfig().getDouble("locinv." + player.getName() + ".exp"));
 		Main.getInstance().getConfig().set("locinv." + player.getName(), null);
 		Main.getInstance().saveConfig();
 	}
-	
+
 	public void saveInvandLoc(Player player) {
 		ItemStack[] items = player.getInventory().getContents();
 		ItemStack[] armor = player.getInventory().getArmorContents();
@@ -81,7 +92,14 @@ public class RecoverManager {
 			list.add(is);
 		for (ItemStack is : armor)
 			list.add(is);
-		BackupManager.getManager().saveInventoryBackup(player, items, "SSARENA - " + hell.supersoul.npc.Main.dateFormat.format(Calendar.getInstance().getTime()));
+		BackupManager.getManager().saveInventoryBackup(player, items,
+				"SSARENA - " + hell.supersoul.npc.Main.dateFormat.format(Calendar.getInstance().getTime()));
+	}
+	
+	public void saveLoc(Player player) {
+		Location loc = player.getLocation();
+		Main.getInstance().getConfig().set("locinv." + player.getName() + ".loc", loc);
+		Main.getInstance().saveConfig();
 	}
 
 }

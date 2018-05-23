@@ -30,7 +30,7 @@ public class WaitRoom {
 	WStatus status = WStatus.WAITING;
 	Location quitLocation, unreadyLocation, readyLocation, roomOwnerLocation, mapCharLocation, countDownCharLocation;
 	int minPlayers, maxPlayers;
-	boolean team, allowMapChoosing, autoReady, allowUnready, autoDisband;
+	boolean team, allowMapChoosing, autoReady, allowUnready, autoDisband, usingInvRecovery;
 	Inventory mapMenu = Bukkit.createInventory(null, 27, ChatColor.BLACK + "Map Menu");
 	Inventory playerMenu = Bukkit.createInventory(null, 54, ChatColor.BLACK + "Room Player Menu");
 	Inventory teamMenu = Bukkit.createInventory(null, 9, InvName.TeamMenu.toString());
@@ -295,5 +295,13 @@ public class WaitRoom {
 
 	public void setAutoDisband(boolean autoDisband) {
 		this.autoDisband = autoDisband;
+	}
+
+	public boolean isUsingInvRecovery() {
+		return usingInvRecovery;
+	}
+
+	public void setUsingInvRecovery(boolean usingInvRecovery) {
+		this.usingInvRecovery = usingInvRecovery;
 	}
 }

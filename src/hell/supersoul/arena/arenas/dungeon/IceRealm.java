@@ -83,6 +83,7 @@ public class IceRealm extends DArena implements Listener {
 
 	@Override
 	public void startArena() {
+		super.startArena();
 		z3l1.getBlock().setData((byte) 3);
 		AUtils.setBlock(z1b1, z1b2, Material.BARRIER, (byte) 0, false);
 		AUtils.setBlock(z1l1, z1l2, Material.AIR, (byte) 0, false);
@@ -90,13 +91,11 @@ public class IceRealm extends DArena implements Listener {
 		ArrayList<String> toRemove = new ArrayList<>();
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mm mobs kill Ice");
 		sendMessage("The mission has " + ChatColor.GREEN + "BEGUN" + ChatColor.GRAY + "!");
-		sendTitle(3, 60, 3, ChatColor.GREEN + "Mission Starts!", ChatColor.GRAY + "Defeat the Ice Queen.");
 		for (String playerName : this.getPlayers()) {
 			if (Bukkit.getPlayer(playerName) == null || !Bukkit.getPlayer(playerName).isOnline()) {
 				toRemove.add(playerName);
 				continue;
 			}
-			survivors.add(playerName);
 			NPCManager.getManager().activateConv(Bukkit.getPlayer(playerName), Conv.getConv("Battle Intro"),
 					ChatColor.DARK_PURPLE.toString(), 0);
 			Player player = Bukkit.getPlayer(playerName);
@@ -114,12 +113,6 @@ public class IceRealm extends DArena implements Listener {
 		}
 		this.updateScoreboard();
 		nextZone();
-	}
-
-	@Override
-	public void announceResult() {
-		this.endArena();
-
 	}
 
 	@Override
@@ -147,23 +140,13 @@ public class IceRealm extends DArena implements Listener {
 	}
 
 	@Override
-	public Scoreboard updateScoreboard() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void nextZone() {
 		currentZone++;
 		if (currentZone == 1) {
 			this.timer += 90;
-			sendTitle(3, 34, 3, ChatColor.AQUA + "Zone I", ChatColor.GRAY + "Climb up to the Ice Castle!");
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					sendTitle(3, 34, 3, ChatColor.GREEN + "+90 Seconds", ChatColor.GRAY + "");
-				}
-			}.runTaskLater(Main.getInstance(), 40);
+			this.sendTitle(3, 34, 3, ChatColor.AQUA + "Mission Begins", ChatColor.GRAY + "The Ice Castle");
+			this.sendDelayedTitle(3, 34, 3, ChatColor.AQUA + "Zone I", ChatColor.GRAY + "Climb up to the Ice Castle!",
+					40);
 			for (int i = 0; i < 7; i++) {
 				try {
 					MythicMobs.inst().getAPIHelper().spawnMythicMob("IceMinion1", z1s2);
@@ -180,40 +163,37 @@ public class IceRealm extends DArena implements Listener {
 			this.sendDelayedMessage(serop + "We should take them down.", 220);
 			this.sendDelayedMessage(elubp + "Good idea!", 280);
 		} else if (currentZone == 2) {
-			sendTitle(3, 34, 3, ChatColor.AQUA + "Zone II", ChatColor.GRAY + "Gather energy by damaging Heartless!");
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					sendTitle(3, 34, 3, ChatColor.GREEN + "+120 Seconds", ChatColor.GRAY + "");
-				}
-			}.runTaskLater(Main.getInstance(), 40);
+			sendDelayedTitle(3, 34, 3, ChatColor.AQUA + "Zone II",
+					ChatColor.GRAY + "Gather energy by damaging Heartless!", 40);
 			AUtils.setBlock(z1b1, z1b2, Material.AIR, (byte) 0, false);
 			AUtils.setBlock(z1l1, z1l2, Material.LADDER, (byte) 0, true);
 			AUtils.setBlock(z2b1, z2b2, Material.BEDROCK, (byte) 0, true);
 			new BukkitRunnable() {
 				@Override
 				public void run() {
-					try {
-						MythicMobs.inst().getAPIHelper().spawnMythicMob("IceMinion2", z2s2);
-						MythicMobs.inst().getAPIHelper().spawnMythicMob("IceMinion4", z2s1);
-					} catch (InvalidMobTypeException e) {
-						e.printStackTrace();
-					}
 					if (currentZone != 2 || !IceRealm.this.getStatus().equals(AStatus.inGame))
 						this.cancel();
+					else
+						try {
+							MythicMobs.inst().getAPIHelper().spawnMythicMob("IceMinion2", z2s2);
+							MythicMobs.inst().getAPIHelper().spawnMythicMob("IceMinion4", z2s1);
+						} catch (InvalidMobTypeException e) {
+							e.printStackTrace();
+						}
 				}
 			}.runTaskTimer(Main.getInstance(), 100, 300);
 			new BukkitRunnable() {
 				@Override
 				public void run() {
-					try {
-						MythicMobs.inst().getAPIHelper().spawnMythicMob("IceMinion3", z2s2);
-						MythicMobs.inst().getAPIHelper().spawnMythicMob("IceMinion5", z2s1);
-					} catch (InvalidMobTypeException e) {
-						e.printStackTrace();
-					}
 					if (currentZone != 2 || !IceRealm.this.getStatus().equals(AStatus.inGame))
 						this.cancel();
+					else
+						try {
+							MythicMobs.inst().getAPIHelper().spawnMythicMob("IceMinion3", z2s2);
+							MythicMobs.inst().getAPIHelper().spawnMythicMob("IceMinion5", z2s1);
+						} catch (InvalidMobTypeException e) {
+							e.printStackTrace();
+						}
 				}
 			}.runTaskTimer(Main.getInstance(), 100, 150);
 			this.sendDelayedMessage(elubp + "ArrggGGGHH why're there BEDROCKS in our WAY!!!", 60);
@@ -221,15 +201,9 @@ public class IceRealm extends DArena implements Listener {
 			this.sendDelayedMessage(serop + "Warriors, we need to collect enough energy by damaging the enemies.", 180);
 			this.sendDelayedMessage(serop + "Then we'll be able to break through the bedrock wall.", 240);
 		} else if (currentZone == 3) {
-			sendTitle(3, 34, 3, ChatColor.AQUA + "Zone III",
-					ChatColor.GRAY + "Pull the lever to turn the spawners off!");
+			sendDelayedTitle(3, 34, 3, ChatColor.AQUA + "Zone III",
+					ChatColor.GRAY + "Pull the lever to turn the spawners off!", 40);
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mm mobs kill Ice");
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					sendTitle(3, 34, 3, ChatColor.GREEN + "+60 Seconds", ChatColor.GRAY + "");
-				}
-			}.runTaskLater(Main.getInstance(), 40);
 			AUtils.setBlock(z3b1, z3b2, Material.BARRIER, (byte) 0, false);
 			AUtils.setBlock(z2b1, z2b2, Material.AIR, (byte) 0, true);
 			new BukkitRunnable() {
@@ -254,17 +228,21 @@ public class IceRealm extends DArena implements Listener {
 					220);
 			this.sendDelayedMessage(elubp + "Warriors, please do that before the monsters are everywhere!!!", 280);
 		} else if (currentZone == 4) {
-			sendTitle(3, 34, 3, ChatColor.RED + "Boss Zone", ChatColor.GRAY + "Defeat the ice queen.");
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					sendTitle(3, 34, 3, ChatColor.GREEN + "+500 Seconds", ChatColor.GRAY + "");
-				}
-			}.runTaskLater(Main.getInstance(), 40);
+			sendDelayedTitle(3, 34, 3, ChatColor.RED + "Boss Zone", "", 40);
 			AUtils.setBlock(z3b1, z3b2, Material.AIR, (byte) 0, false);
-			Entity ent = null;
 			try {
-				MythicMobs.inst().getAPIHelper().spawnMythicMob("IceWitch", z4s1);
+				Entity ent = MythicMobs.inst().getAPIHelper().spawnMythicMob("IceWitch_P", z4s1);
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						ent.remove();
+						try {
+							MythicMobs.inst().getAPIHelper().spawnMythicMob("IceWitch", z4s1);
+						} catch (InvalidMobTypeException e) {
+							e.printStackTrace();
+						}
+					}
+				}.runTaskLater(Main.getInstance(), 200);
 			} catch (InvalidMobTypeException e) {
 				e.printStackTrace();
 			}
@@ -288,18 +266,23 @@ public class IceRealm extends DArena implements Listener {
 		if (currentZone == 1) {
 			this.timer += 120;
 			nextZone();
-			sendTitle(3, 34, 3, ChatColor.GOLD + "Zone I Completed", "");
 			sendMessage(elubp + "Warriors, climb up using the ladders now!");
+			this.sendTitle(3, 34, 3,
+					ChatColor.GOLD.toString() + ChatColor.STRIKETHROUGH.toString() + ChatColor.ITALIC + "Zone I",
+					ChatColor.GREEN + "+120 Seconds");
 		} else if (currentZone == 2) {
 			this.timer += 60;
 			nextZone();
-			sendTitle(3, 34, 3, ChatColor.GOLD + "Zone II Completed", "");
+			this.sendTitle(3, 34, 3,
+					ChatColor.GOLD.toString() + ChatColor.STRIKETHROUGH.toString() + ChatColor.ITALIC + "Zone II",
+					ChatColor.GREEN + "+60 Seconds");
 		} else if (currentZone == 3) {
 			this.timer += 500;
 			nextZone();
-			sendTitle(3, 34, 3, ChatColor.GOLD + "Zone III Completed", "");
+			this.sendTitle(3, 34, 3,
+					ChatColor.GOLD.toString() + ChatColor.STRIKETHROUGH.toString() + ChatColor.ITALIC + "Zone III",
+					ChatColor.GREEN + "+500 Seconds");
 		} else if (currentZone == 4) {
-			sendTitle(3, 34, 3, ChatColor.GOLD + "Boss Zone Completed", "");
 			sendMessage(elsagdp + "Than... Thank you for saving me from the darkness...");
 			new BukkitRunnable() {
 				@Override
@@ -328,7 +311,6 @@ public class IceRealm extends DArena implements Listener {
 				return;
 			int damage = (int) event.getFinalDamage();
 			totalDamageLeft -= damage;
-			Bukkit.getLogger().info(event.getDamage() + "|" + event.getFinalDamage());
 		} else if (event.getDamager() instanceof Projectile) {
 			Projectile proj = (Projectile) event.getDamager();
 			if (!(proj.getShooter() instanceof Player))

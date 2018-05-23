@@ -76,8 +76,7 @@ public abstract class Arena implements Listener {
 
 	// TODO Damage, settings, regions
 	public void iniArena(String mapName, World world) {
-		this.setDisplayName("TEST");
-		// this.setDisplayName(WaitRoomManager.getManager().getMapData(mapName).getDisplayName());
+		this.setDisplayName(WRManager.getManager().getMapData(mapName).getDisplayName());
 		MyConfig config = Main.getConfigManager().getNewConfig("data/arenas/" + mapName + ".yml");
 		this.setAuthors((ArrayList<String>) config.getList("Arena.authors"));
 		this.world = world;
@@ -107,6 +106,15 @@ public abstract class Arena implements Listener {
 		}.runTaskLater(Main.getInstance(), delay);
 	}
 
+	public void sendDelayedTitle(int fadein, int stay, int fadeout, String title, String subTitle, long delay) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				sendTitle(fadein, stay, fadeout, title, subTitle);
+			}
+		}.runTaskLater(Main.getInstance(), delay);
+	}
+	
 	public void sendTitle(int fadein, int stay, int fadeout, String title, String subTitle) {
 		for (String playerName : players) {
 			Player player = Bukkit.getPlayer(playerName);
