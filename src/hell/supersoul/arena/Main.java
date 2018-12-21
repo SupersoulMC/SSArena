@@ -44,6 +44,7 @@ public class Main extends JavaPlugin {
 					AUtils.deleteWorld(world.getName());
 			}
 		}
+		WRManager.getManager().initializeMenuLooping();
 	}
 
 	@Override
@@ -59,8 +60,10 @@ public class Main extends JavaPlugin {
 			
 			WaitRoom wr = WRManager.getManager().createWaitRoom("IceWR");
 			WRManager.getManager().changeMap(wr, "IceRealm");
-			WRManager.getManager().addPlayer(wr.getRoomName(), player.getName());
-			WRManager.getManager().playerReady(null, player.getName());
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				WRManager.getManager().addPlayer(wr.getRoomName(), p.getName());
+				WRManager.getManager().playerReady(null, p.getName());
+			}
 			WRManager.getManager().countDown(wr);
 			
 			/*

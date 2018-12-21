@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -48,6 +49,9 @@ public class WRManager {
 	public static WRManager getManager() {
 		return wrm;
 	}
+	
+	HashMap<String, ArrayList<Inventory>> wrMenus = new HashMap<>();
+	boolean updating = false;
 
 	public void loadMapData() {
 		MyConfig config = Main.getConfigManager().getNewConfig("data/mapData.yml");
@@ -278,7 +282,7 @@ public class WRManager {
 		if (wr.isTeam()) {
 			int size = wr.getAvailableTeams().size();
 			for (ChatColor team : wr.getAvailableTeams()) {
-				if (wr.getTeamReadyPlayers().get(team).size() >= wr.getMinPlayers() / wr.getAvailableTeams().size())
+				if (wr.getTeamReadyPlayers().get(team).size() >= wr.getSelectedMap().getMinPlayer() / wr.getAvailableTeams().size())
 					size--;
 			}
 			if (size == 0) {
@@ -286,7 +290,7 @@ public class WRManager {
 				return;
 			}
 		} else {
-			int playersLeft = wr.getMinPlayers() - wr.getReadyPlayers().size();
+			int playersLeft = wr.getSelectedMap().getMinPlayer() - wr.getReadyPlayers().size();
 			if (playersLeft <= 0) {
 				WRManager.getManager().countDown(wr);
 				return;
@@ -312,7 +316,7 @@ public class WRManager {
 				i--;
 				if (i <= 0) {
 					boolean start = true;
-					if (!wr.isTeam() && wr.getReadyPlayers().size() < wr.getMinPlayers())
+					if (!wr.isTeam() && wr.getReadyPlayers().size() < wr.getSelectedMap().getMinPlayer())
 						start = false;
 					if (wr.isTeam()) {
 						int size = wr.getAvailableTeams().size();
@@ -322,7 +326,7 @@ public class WRManager {
 								size--;
 								continue;
 							}
-							if (wr.getTeamReadyPlayers().get(team).size() >= wr.getMinPlayers()
+							if (wr.getTeamReadyPlayers().get(team).size() >= wr.getSelectedMap().getMinPlayer()
 									/ wr.getAvailableTeams().size())
 								size--;
 						}
@@ -499,7 +503,7 @@ public class WRManager {
 					wrObjective.getScore(ChatColor.GRAY + "Room Owner: " + ChatColor.AQUA + wr.getRoomOwnerName())
 							.setScore(6);
 				wrObjective.getScore(ChatColor.UNDERLINE.toString()).setScore(5);
-				wrObjective.getScore(ChatColor.GRAY + "Min Players: " + ChatColor.DARK_GREEN + wr.getMinPlayers())
+				wrObjective.getScore(ChatColor.GRAY + "Min Players: " + ChatColor.DARK_GREEN + wr.getSelectedMap().getMinPlayer())
 						.setScore(4);
 				wrObjective.getScore(ChatColor.GRAY + "Non-ready Players: " + ChatColor.RED
 						+ (wr.getPlayers().size() - wr.getReadyPlayers().size())).setScore(3);
@@ -515,7 +519,7 @@ public class WRManager {
 							.getScore(
 									ChatColor.GRAY + "Ready Players: " + ChatColor.GREEN + wr.getReadyPlayers().size())
 							.setScore(2);
-				wrObjective.getScore(ChatColor.GRAY + "Max Players: " + ChatColor.DARK_RED + wr.getMaxPlayers())
+				wrObjective.getScore(ChatColor.GRAY + "Max Players: " + ChatColor.DARK_RED + wr.getSelectedMap().getMinPlayer())
 						.setScore(1);
 			}
 		}.runTaskLater(Main.getInstance(), 5);
@@ -562,6 +566,73 @@ public class WRManager {
 		Arena.arenas.remove(arena);
 	}
 
+	public void updateWaitroomMenu() {
+		MyConfig waitRoomData = Main.getConfigManager().getNewConfig("data/waitRoomData.yml",
+				new String[] { "SS Arena waitRoomData file" });
+		ItemStack pane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
+		pane = AUtils.setDisplayName(pane, ChatColor.GRAY.toString());
+		ItemStack current = new ItemStack(Material.WOOL, 1, (short) 5);
+		current = AUtils.setDisplayName(current, ChatColor.GREEN + "Current Page");
+		ItemStack newWR =  new ItemStack(Material.WOOL, 1, (short) 1);
+		newWR = AUtils.setDisplayName(newWR, ChatColor.GOLD + "Create a New Waitroom");
+		int count = 0;
+		for (String mode : waitRoomData.getConfigurationSection("").getKeys(false)) {
+			newWR = AUtils.setLore(newWR, AUtils.convertToInvisibleString("SSArena create " + mode));
+			Inventory inv = Bukkit.createInventory(null, 54, mode);
+			for (int i = 36 ; i < 45 ; i++)
+				inv.setItem(i, pane);
+			inv.setItem(52, current);
+			if (!waitRoomData.getBoolean(mode + ".fixedWaitroom"))
+				inv.setItem(45, newWR);
+			for (WaitRoom wr : WaitRoom.waitRoomObjects) {
+				if (!wr.getMode().equals(mode))
+					continue;
+				
+				ItemStack is = new ItemStack(Material.WOOL, 1, (short) 14);
+				ArrayList<String> lore = new ArrayList<>();
+				ChatColor statusc = ChatColor.RED;
+				if (wr.getStatus().equals(WStatus.WAITING)) {
+					is.setDurability((short)5);
+					statusc = ChatColor.GREEN;
+				}
+				lore.add(ChatColor.GRAY + "Status: " + statusc + StringUtils.capitalize(wr.getStatus().toString()));
+				lore.add("");
+				lore.add(ChatColor.GRAY + "Map: " + wr.getSelectedMap().getDisplayName());
+				lore.add(ChatColor.GRAY + "Count: " + wr.getSelectedMap().getMinPlayer() + "\\" + ChatColor.GREEN + wr.getPlayers().size() + ChatColor.GRAY + "\\" + wr.getSelectedMap().getMaxPlayer());
+				lore.add(ChatColor.GRAY + "Room Leader: " + wr.getRoomOwnerName());
+				lore.add(AUtils.convertToInvisibleString("SSArena join " + wr.getRoomName()));
+				is = AUtils.setDisplayName(is, statusc + ChatColor.BOLD.toString() + wr.getRoomName());
+				is = AUtils.setLore(is, lore);
+				
+				inv.setItem(count, is);
+				count++;
+			}
+			
+			//TODO Multiple pages
+			wrMenus.put(mode, new ArrayList<>());
+			wrMenus.get(mode).add(inv);
+		}
+	}
+	
+	public void openWaitroomMenu(String mode, Player player, int page) {
+		if (!wrMenus.containsKey(mode))
+			return;
+		if (player == null)
+			return;
+		player.openInventory(wrMenus.get(mode).get(page - 1));
+	}
+	
+	public void initializeMenuLooping() {
+		if (updating)
+			return;
+		updating = true;
+		new BukkitRunnable() {
+			public void run() {
+				WRManager.this.updateWaitroomMenu();
+			}
+		}.runTaskTimer(Main.getInstance(), 0, 100);
+	}
+	
 	public static WaitRoom loadWaitRoom(String mode, String roomName) {
 		int x, y, z, yaw;
 		Location loc;
@@ -623,10 +694,6 @@ public class WRManager {
 				wr.setSelectedMap(md);
 		}
 		int no;
-		no = waitRoomData.getInt(mode + ".minPlayers");
-		wr.setMinPlayers(no);
-		no = waitRoomData.getInt(mode + ".maxPlayers");
-		wr.setMaxPlayers(no);
 		no = waitRoomData.getInt(mode + ".charDirection");
 		if (wr.isTeam()) {
 			ArrayList<String> list = (ArrayList<String>) waitRoomData.getList(mode + ".availableTeams");
@@ -672,4 +739,6 @@ public class WRManager {
 		}
 		return wr;
 	}
+	
+	
 }

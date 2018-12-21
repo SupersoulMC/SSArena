@@ -29,8 +29,7 @@ public class WaitRoom {
 	MapData selectedMap;
 	WStatus status = WStatus.WAITING;
 	Location quitLocation, unreadyLocation, readyLocation, roomOwnerLocation, mapCharLocation, countDownCharLocation;
-	int minPlayers, maxPlayers;
-	boolean team, allowMapChoosing, autoReady, allowUnready, autoDisband, usingInvRecovery;
+	boolean team, allowMapChoosing, autoReady, allowUnready, autoDisband, usingInvRecovery, fixedWaitroom;
 	Inventory mapMenu = Bukkit.createInventory(null, 27, ChatColor.BLACK + "Map Menu");
 	Inventory playerMenu = Bukkit.createInventory(null, 54, ChatColor.BLACK + "Room Player Menu");
 	Inventory teamMenu = Bukkit.createInventory(null, 9, InvName.TeamMenu.toString());
@@ -79,14 +78,6 @@ public class WaitRoom {
 		return roomOwnerLocation;
 	}
 
-	public int getMinPlayers() {
-		return minPlayers;
-	}
-
-	public int getMaxPlayers() {
-		return maxPlayers;
-	}
-
 	public void setPlayers(ArrayList<Player> players) {
 		this.players = players;
 	}
@@ -119,14 +110,6 @@ public class WaitRoom {
 		this.roomOwnerLocation = roomOwnerLocation;
 	}
 
-	public void setMinPlayers(int minPlayers) {
-		this.minPlayers = minPlayers;
-	}
-
-	public void setMaxPlayers(int maxPlayers) {
-		this.maxPlayers = maxPlayers;
-	}
-
 	public Location getUnreadyLocation() {
 		return unreadyLocation;
 	}
@@ -147,6 +130,14 @@ public class WaitRoom {
 		this.mapMenu = mapMenu;
 	}
 
+	public boolean isFixedWaitroom() {
+		return fixedWaitroom;
+	}
+
+	public void setFixedWaitroom(boolean fixedWaitroom) {
+		this.fixedWaitroom = fixedWaitroom;
+	}
+
 	public void setPlayerMenu(Inventory playerMenu) {
 		this.playerMenu = playerMenu;
 	}
@@ -160,7 +151,7 @@ public class WaitRoom {
 	}
 
 	public boolean isFull() {
-		if (this.getReadyPlayers().size() >= this.maxPlayers)
+		if (this.getReadyPlayers().size() >= this.getSelectedMap().getMaxPlayer())
 			return true;
 		return false;
 	}

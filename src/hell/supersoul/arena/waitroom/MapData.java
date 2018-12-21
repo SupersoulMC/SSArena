@@ -7,7 +7,7 @@ public class MapData {
 	
 	String className, displayName, worldName, titleName;
 	boolean luckyBlocks, allowLuckyBlocksSwitch, allowArmorAbilitySwitch, team, allowChooseTeam, allowChooseTeamSwitch, defaultMap;
-	int difficulty;
+	int difficulty, minPlayer = 1, maxPlayer = 30;
 	int teams = 1;
 	ArrayList<String> desc = new ArrayList<>();
 	public MapData(String className, int difficulty, ArrayList<String> desc) {
@@ -100,5 +100,17 @@ public class MapData {
 	}
 	public void setDefaultMap(boolean defaultMap) {
 		this.defaultMap = defaultMap;
+	}
+	public int getMinPlayer() {
+		return minPlayer;
+	}
+	public int getMaxPlayer() {
+		return maxPlayer;
+	}
+	public void setMinPlayer(int minPlayer) {
+		this.minPlayer = minPlayer;
+	}
+	public void setMaxPlayer(int maxPlayer) {
+		this.maxPlayer = maxPlayer;
 	}
 }

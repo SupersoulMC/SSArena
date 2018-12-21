@@ -3,6 +3,7 @@ package hell.supersoul.arena.utils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -573,5 +574,35 @@ public class AUtils {
 	                (e1, e2) -> e1, 
 	                LinkedHashMap::new
 	              ));
+	}
+	
+	public static ItemStack setDisplayName(ItemStack is, String name) {
+		ItemMeta im = is.getItemMeta();
+		im.setDisplayName(name);
+		is.setItemMeta(im);
+		return is;
+	}
+	
+	public static ItemStack setLore(ItemStack is, String... list) {
+		return setLore(is, Arrays.asList(list));
+	}
+	
+	public static ItemStack setLore(ItemStack is, List<String> list) {
+		ItemMeta im = is.getItemMeta();
+		im.setLore(list);
+		is.setItemMeta(im);
+		return is;
+	}
+	
+	public static String convertToInvisibleString(String s) {
+		String hidden = "";
+		for (char c : s.toCharArray())
+			hidden += ChatColor.COLOR_CHAR + "" + c;
+		return hidden;
+	}
+
+	public static String convertToVisibleString(String s) {
+		String hidden = s.replaceAll("¡±", "");
+		return hidden;
 	}
 }
